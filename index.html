@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="caminho-para-o-seu-favicon" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estoque D0</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="logo.png" sizes="32x32" type="image/png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="logo.png" alt="Logo" id="logo">
+        </div>
+       
+        <div class="botao">
+        <input type="text" id="codigoProduto" placeholder="DIGITE SUA BUSCA (SKU | POSIÇÃO | HU)"><br>
+        
+            <button onclick="buscarProduto()">Buscar por Código</button>
+            <button onclick="buscarPosicao()">Buscar por Posição</button>
+            <button onclick="buscarProdutoPorHU()">Buscar por HU</button>
+        </div>
+        <table id="resultado">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Código Produto</th>
+                    <th>Data de Fabricação</th>
+                    <th>Local</th>
+                    <th>Informação HU</th>
+                </tr>
+            </thead>
+            <tbody id="corpoTabela"></tbody>
+        </table>
+    </div>
+    <div id="totalProdutos"></div>
+<script>
+    let csvData;
+    async function carregarCsv() {
+            const response = await fetch('arquivo.csv');
+            const text = await response.text();
+            csvData = Papa.parse(text, { header: true }).data;
+
+            // Adiciona o cabeçalho para a coluna "Qtd"
+            adicionarCabeçalhoQtd();
+            // Mostrar total de produtos
+            mostrarTotalProdutos();
+        }
+
+        document.addEventListener('DOMContentLoaded', carregarCsv);
+
+        // Adiciona o cabeçalho para a coluna "Qtd"
+        function adicionarCabeçalhoQtd() {
+            var headerRow = document.querySelector("#resultado thead tr");
+            var qtdHeader = document.createElement("th");
+            qtdHeader.textContent = "Qtd";
+            headerRow.insertBefore(qtdHeader, headerRow.childNodes[0]); // Insere o cabeçalho no início da linha
+        }
+
+        document.getElementById('logo').addEventListener('click', function() {
+            location.reload();
+        });
+    
+        function buscarProduto() {
+            let codigoProduto = document.getElementById('codigoProduto').value;
+            let tbody = document.getElementById('corpoTabela');
+            tbody.innerHTML = ''; // Limpa o corpo da tabela antes de adicionar novos resultados
+
+            for (let i = 0; i < csvData.length; i++) {
+                if (csvData[i]['Codigo Produto'] == codigoProduto) {
+                    let tr = document.createElement('tr');
+                    let tdQtd = document.createElement('td');
+                    let tdCodigoProduto = document.createElement('td');
+                    let tdDataFabricacao = document.createElement('td');
+                    let tdLocal = document.createElement('td');
+                    let tdInformacaoHU = document.createElement('td');
+
+                    tdCodigoProduto.textContent = csvData[i]['Codigo Produto'];
+                    tdDataFabricacao.textContent = csvData[i]['Data de Fabricação'].substring(0, 10);
+                    tdLocal.textContent = csvData[i]['Local'];
+                    tdInformacaoHU.textContent = csvData[i]['Informacao HU'];
+
+                    tr.appendChild(tdQtd);
+                    tr.appendChild(tdCodigoProduto);
+                    tr.appendChild(tdDataFabricacao);
+                    tr.appendChild(tdLocal);
+                    tr.appendChild(tdInformacaoHU);
+
+                    tbody.appendChild(tr);
+                    
+                }
+            }
+            adicionarNumerosResultados();
+        }
+
+        function buscarPosicao() {
+            let codigoProduto = document.getElementById('codigoProduto').value;
+            let tbody = document.getElementById('corpoTabela');
+            tbody.innerHTML = ''; // Limpa o corpo da tabela antes de adicionar novos resultados
+
+            for (let i = 0; i < csvData.length; i++) {
+                if (csvData[i]['Local'] == codigoProduto) {
+                    let tr = document.createElement('tr');
+                    let tdQtd = document.createElement('td');
+                    let tdCodigoProduto = document.createElement('td');
+                    let tdDataFabricacao = document.createElement('td');
+                    let tdLocal = document.createElement('td');
+                    let tdInformacaoHU = document.createElement('td');
+
+                    tdCodigoProduto.textContent = csvData[i]['Codigo Produto'];
+                    tdDataFabricacao.textContent = csvData[i]['Data de Fabricação'].substring(0, 10);
+                    tdLocal.textContent = csvData[i]['Local'];
+                    tdInformacaoHU.textContent = csvData[i]['Informacao HU'];
+
+                    tr.appendChild(tdQtd);
+                    tr.appendChild(tdCodigoProduto);
+                    tr.appendChild(tdDataFabricacao);
+                    tr.appendChild(tdLocal);
+                    tr.appendChild(tdInformacaoHU);
+
+                    tbody.appendChild(tr);
+                }
+            }
+            adicionarNumerosResultados();
+        }
+
+        function buscarProdutoPorHU() {
+            let informacaoHU = document.getElementById('codigoProduto').value;
+            let tbody = document.getElementById('corpoTabela');
+            tbody.innerHTML = ''; // Limpa o corpo da tabela antes de adicionar novos resultados
+
+            let informacaoHUEncontrada = false;
+
+            for (let i = 0; i < csvData.length; i++) {
+                if (csvData[i]['Informacao HU'] == informacaoHU) {
+                    informacaoHUEncontrada = true;
+                    let tr = document.createElement('tr');
+                    let tdQtd = document.createElement('td');
+                    let tdCodigoProduto = document.createElement('td');
+                    let tdDataFabricacao = document.createElement('td');
+                    let tdLocal = document.createElement('td');
+                    let tdInformacaoHU = document.createElement('td');
+
+                    tdCodigoProduto.textContent = csvData[i]['Codigo Produto'];
+                    tdDataFabricacao.textContent = csvData[i]['Data de Fabricação'].substring(0, 10);
+                    tdLocal.textContent = csvData[i]['Local'];
+                    tdInformacaoHU.textContent = csvData[i]['Informacao HU'];
+
+                    tr.appendChild(tdQtd);
+                    tr.appendChild(tdCodigoProduto);
+                    tr.appendChild(tdDataFabricacao);
+                    tr.appendChild(tdLocal);
+                    tr.appendChild(tdInformacaoHU);
+
+                    tbody.appendChild(tr);
+                }
+            }
+
+            if (!informacaoHUEncontrada) {
+                let tr = document.createElement('tr');
+                let tdInformacaoHU = document.createElement('td');
+                tdInformacaoHU.textContent = 'Informação de HU não encontrada';
+                tdInformacaoHU.colSpan = 4; // Preenche todas as colunas
+                tr.appendChild(tdInformacaoHU);
+                tbody.appendChild(tr);
+            }
+            adicionarNumerosResultados();
+        }
+
+        function adicionarNumerosResultados() {
+            var tbody = document.getElementById("corpoTabela");
+            var rows = tbody.getElementsByTagName("tr");
+            for (var i = 0; i < rows.length; i++) {
+                var cell = document.createElement("td");
+                cell.textContent = i + 1;
+                rows[i].insertBefore(cell, rows[i].childNodes[0]); // Insere a célula no início da linha
+            }
+        }
+
+        // Função para calcular e mostrar o total de produtos
+        function mostrarTotalProdutos() {
+            var totalProdutos = csvData.length;
+            document.getElementById("totalProdutos").textContent = "Total de Produtos: " + totalProdutos  <br> + "Essa somatoria são todos os produtos com HU cadastrado!" ;
+        }
+
+        // Função para mostrar o total de produtos e o total de cada SKU em uma tabela
+function mostrarTotalProdutos() {
+    let totalProdutos = csvData.length;
+    let skuQuantidades = {};
+
+    for (let i = 0; i < csvData.length; i++) {
+        let sku = csvData[i]['Codigo Produto'];
+        if (sku in skuQuantidades) {
+            skuQuantidades[sku]++;
+        } else {
+            skuQuantidades[sku] = 1;
+        }
+    }
+
+    let totalSkuTable = '<table><tr><th>SKU</th><th>Total</th></tr>';
+    for (const sku in skuQuantidades) {
+        if (skuQuantidades.hasOwnProperty(sku)) {
+            totalSkuTable += `<tr><td>${sku}</td><td>${skuQuantidades[sku]}</td></tr>`;
+        }
+    }
+    totalSkuTable += '</table>';
+
+    document.getElementById('totalProdutos').innerHTML = `<p>Total de produtos: ${totalProdutos}. <br>  Essa somatoria são todos os produtos com HU cadastrado! </p> ;
+    ${totalSkuTable}`;
+}
+
+
+    document.addEventListener('DOMContentLoaded', carregarCsv);
+</script>
+</body>
+</html>
