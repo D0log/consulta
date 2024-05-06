@@ -18,7 +18,8 @@
         <div class="botao">
         <input type="text" id="codigoProduto" placeholder="DIGITE SUA BUSCA (SKU | POSIÇÃO | HU)"><br>
         
-            <button onclick="buscarProduto()">Buscar por Código</button>
+            <button onclick="buscarProduto()">SKU por Data</button>
+            <button onclick="buscarPorSKU()">SKU por Posição</button>
             <button onclick="buscarPosicao()">Buscar por Posição</button>
             <button onclick="buscarProdutoPorHU()">Buscar por HU</button>
         </div>
@@ -62,6 +63,40 @@
         document.getElementById('logo').addEventListener('click', function() {
             location.reload();
         });
+
+
+
+        function buscarPorSKU() {
+    let sku = document.getElementById('codigoProduto').value;
+    let tbody = document.getElementById('corpoTabela');
+    tbody.innerHTML = ''; // Limpa o corpo da tabela antes de adicionar novos resultados
+
+    let skuPositions = {}; // Objeto para armazenar as posições e quantidades de cada SKU
+
+    for (let i = 0; i < csvData.length; i++) {
+        if (csvData[i]['Codigo Produto'] === sku) {
+            let local = csvData[i]['Local'];
+            // Contagem das posições e quantidades de cada SKU
+            if (local in skuPositions) {
+                skuPositions[local]++;
+            } else {
+                skuPositions[local] = 1;
+            }
+        }
+    }
+
+    // Exibir as posições e quantidades do SKU
+    let positionsHTML = ' <p>Posições do SKU ' + sku + ':</p><ul style="list-style-type: none; padding: 0; margin: 0;">';
+    for (const position in skuPositions) {
+        if (skuPositions.hasOwnProperty(position)) {
+            positionsHTML += '<li style="padding: 10px; margin-bottom: 5px; background-color: #f2f2f2; border-radius: 5px;">Posição ' + position + ': ' + skuPositions[position] + ' UN</li>';
+        }
+    }
+    positionsHTML += '</ul>';
+
+    document.getElementById('totalProdutos').innerHTML = positionsHTML;
+}
+
     
         function buscarProduto() {
             let codigoProduto = document.getElementById('codigoProduto').value;
@@ -180,10 +215,50 @@
         }
 
         // Função para calcular e mostrar o total de produtos
-        function mostrarTotalProdutos() {
-            var totalProdutos = csvData.length;
-            document.getElementById("totalProdutos").textContent = "Total de Produtos: " + totalProdutos  <br> + "Essa somatoria são todos os produtos com HU cadastrado!" ;
+function mostrarTotalProdutos() {
+    let totalProdutos = csvData.length;
+    document.getElementById("totalProdutos").textContent = "Total de Produtos: " + totalProdutos + ". Essa soma é de todos os produtos com HU cadastrado!";
+}
+
+// Função para mostrar o total de cada SKU em uma tabela
+function mostrarTotalSKU() {
+    let skuQuantidades = {};
+    for (let i = 0; i < csvData.length; i++) {
+        let sku = csvData[i]['Codigo Produto'];
+        if (sku in skuQuantidades) {
+            skuQuantidades[sku]++;
+        } else {
+            skuQuantidades[sku] = 1;
         }
+    }
+
+
+    let totalSkuTable = '<table style="border-collapse: collapse; width: 100%; font-size: 28px;">' +
+                    '<tr style="background-color: #f2f2f2;">' +
+                    '<th >SKU</th>' +
+                    '<th >Total</th>' +
+                    '</tr>';
+
+for (const sku in skuQuantidades) {
+    if (skuQuantidades.hasOwnProperty(sku)) {
+        totalSkuTable += `<tr>` +
+                         `<td >${sku}</td>` +
+                         `<td style="border: 1px solid #ddd; padding: 8px; text-align: left; color: blue;">${skuQuantidades[sku]}</td>` +
+                         `</tr>`;
+    }
+}
+
+totalSkuTable += '</table>';
+
+document.getElementById('totalProdutos').innerHTML = totalSkuTable;
+
+
+
+    totalSkuTable += '</table>';
+
+    document.getElementById('totalProdutos').innerHTML += totalSkuTable;
+}
+
 
         // Função para mostrar o total de produtos e o total de cada SKU em uma tabela
 function mostrarTotalProdutos() {
@@ -199,13 +274,13 @@ function mostrarTotalProdutos() {
         }
     }
 
-    let totalSkuTable = '<table><tr><th>SKU</th><th>Total</th></tr>';
+    let totalSkuTable = '<table ><tr><th >SKU</th><th>Total</th></tr>';
     for (const sku in skuQuantidades) {
         if (skuQuantidades.hasOwnProperty(sku)) {
-            totalSkuTable += `<tr><td>${sku}</td><td>${skuQuantidades[sku]}</td></tr>`;
+            totalSkuTable += `<tr><td >${sku}</td><td >${skuQuantidades[sku]}</td></tr>`;
         }
     }
-    totalSkuTable += '</table>';
+    totalSkuTable += '</table >';
 
     document.getElementById('totalProdutos').innerHTML = `<p>Total de produtos: ${totalProdutos}. <br>  Essa somatoria são todos os produtos com HU cadastrado! </p> ;
     ${totalSkuTable}`;
